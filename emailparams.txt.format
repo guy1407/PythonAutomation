@@ -1,0 +1,5 @@
+smtpserver:smtp.somewhere.com
+portnumber:587
+emailaddress:mysenderaddress@somewhere.com
+password:MyTopSecretPassword1234!@#$
+recepients:someone@someone.com
