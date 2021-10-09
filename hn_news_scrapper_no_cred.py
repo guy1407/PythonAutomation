@@ -1,53 +1,55 @@
-import requests  # http requests
-
-from bs4 import BeautifulSoup  # web scraping
-# Send the mail
-import smtplib
-# email body
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-# system date and time manipulation
+from bs4 import BeautifulSoup  # web scraping
 import datetime
-now = datetime.datetime.now()
+import requests  # http requests
+import smtplib
 
-# email content placeholder
+# #####################################
+# read email parameters
 
-content = ''
+# open the data file:
+file = open("emailparams.txt")
+# read the file as a list
+emailParams = file.readlines()
+# close the file
+file.close()
+# #####################################
+# put email parameters into variables:
+SMTPServer = emailParams[0].split(':')[1].rstrip('\n')
+portNumber = emailParams[1].split(':')[1].rstrip('\n')
+emailAddress = emailParams[2].split(':')[1].rstrip('\n')
+password = emailParams[3].split(':')[1].rstrip('\n')
+recipients = emailParams[4].split(':')[1].rstrip('\n')
+# #####################################
+
+timeStamp = datetime.datetime.now()
+
 
 # extracting Hacker News Stories
 
 
 def extract_news(url):
     print('Extracting Hacker News Stories...')
-    cnt = ''
-    cnt += ('<b>HN Top Stories:</b>\n' + '<br>' + '-'*50+'<br>')
+    pageContent = ''
+    pageContent += ('<b>HN Top Stories:</b>\n' + '<br>' + '-'*50+'<br>')
     response = requests.get(url)
     content = response.content
     soup = BeautifulSoup(content, 'html.parser')
     for i, tag in enumerate(soup.find_all('td', attrs={'class': 'title', 'valign': ''})):
-        cnt += ((str(i+1)+' :: ' + tag.text + "\n" + '<br>')
+        pageContent += ((str(i+1)+' :: ' + tag.text + "\n" + '<br>')
                 if tag.text != 'More' else '')
         # print(tag,prettify) #find all ('span', attrs={'class':'sitestr''}))
-    return (cnt)
+    return (pageContent)
 
-
-cnt = extract_news('https://news.ycombinator.com/')
-content += cnt
-content += ('<br>------<br>')
-content += ('<br><br>End of Message')
+# email content placeholder
+emailBody = extract_news('https://news.ycombinator.com/')
+emailBody += ('<br>------<br>')
+emailBody += ('<br><br>End of Message')
 
 # lets send the email
 
 print('Composing Email ...')
-
-# update your email details
-
-SERVER = 'smtp.gmail.com'  # "your smtp server"
-PORT = 587
-FROM = ''  # your email id
-TO = ''  # "your to email ids" # can be a list
-PASS = ''  # "your email id's password"
-
 
 # fp = open(file_name, 'rb')
 # Create a text/plain message
@@ -56,25 +58,22 @@ msg = MIMEMultipart()
 
 # msg.add_header('Content-Disposition', 'attachment', filename='empty.txt')
 msg['Subject'] = 'Top News Stories HN [Automated Email]' + ' ' + \
-    str(now.day) + '/' + str(now.month) + '/' + str(now.year)
-msg['From'] = FROM
-msg['To'] = TO
+    str(timeStamp.day) + '/' + str(timeStamp.month) + '/' + str(timeStamp.year)
+msg['From'] = emailAddress
+msg['To'] = recipients
 
-msg.attach(MIMEText(content, 'html'))
+msg.attach(MIMEText(emailBody, 'html'))
 # fp.close()
 
 print('Initiating Server...')
 
-server = smtplib.SMTP(SERVER, PORT)
-# server = smtplib.SMTP SSL('smtp.gmail.com', 465)
+server = smtplib.SMTP(SMTPServer, int(portNumber))
 server.set_debuglevel(1)
 server.ehlo()
 server.starttls()
-# server.ehlo
-server.login(FROM, PASS)
-server.sendmail(FROM, TO, msg.as_string())
+server.login(emailAddress, password)
+server.sendmail(emailAddress, recipients, msg.as_string())
 
 print('Email Sent...')
 
 server.quit()
-
