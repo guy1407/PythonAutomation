@@ -1,8 +1,9 @@
 The following should be the content of the emailparams.txt .
 Change the values according to your email provider.
 ---------------------------------------------
-smtpserver:smtp.somewhere.com
-portnumber:587
-emailaddress:mysenderaddress@somewhere.com
-password:MyTopSecretPassword1234!@#$
+serverlogin:mysmtpusername@somedomain.com (most of the times it's  same as from address)
+serverpassword:MyTopSecretPassword1234!@#$
+smtpserver:smtpaddress.somewhere.com
+portnumber:1234
+fromaddress:mysenderaddress@somewhere.com
 recepients:someone@someone.com
