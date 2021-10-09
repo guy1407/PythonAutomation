@@ -16,19 +16,16 @@ emailParams = file.readlines()
 file.close()
 # #####################################
 # put email parameters into variables:
-SMTPServer = emailParams[0].split(':')[1].rstrip('\n')
-portNumber = emailParams[1].split(':')[1].rstrip('\n')
-emailAddress = emailParams[2].split(':')[1].rstrip('\n')
-password = emailParams[3].split(':')[1].rstrip('\n')
-recipients = emailParams[4].split(':')[1].rstrip('\n')
+serverLogin = emailParams[0].split(':')[1].rstrip('\n')
+serverPassword = emailParams[1].split(':')[1].rstrip('\n')
+SMTPServer = emailParams[2].split(':')[1].rstrip('\n')
+portNumber = emailParams[3].split(':')[1].rstrip('\n')
+fromAddress = emailParams[4].split(':')[1].rstrip('\n')
+recipients = emailParams[5].split(':')[1].rstrip('\n')
 # #####################################
-
 timeStamp = datetime.datetime.now()
 
-
 # extracting Hacker News Stories
-
-
 def extract_news(url):
     print('Extracting Hacker News Stories...')
     pageContent = ''
@@ -50,29 +47,23 @@ emailBody += ('<br><br>End of Message')
 # lets send the email
 
 print('Composing Email ...')
-
-# fp = open(file_name, 'rb')
 # Create a text/plain message
-#msg = MIMEText('')
 msg = MIMEMultipart()
 
-# msg.add_header('Content-Disposition', 'attachment', filename='empty.txt')
 msg['Subject'] = 'Top News Stories HN [Automated Email]' + ' ' + \
     str(timeStamp.day) + '/' + str(timeStamp.month) + '/' + str(timeStamp.year)
-msg['From'] = emailAddress
+msg['From'] = fromAddress
 msg['To'] = recipients
-
 msg.attach(MIMEText(emailBody, 'html'))
-# fp.close()
+
 
 print('Initiating Server...')
-
 server = smtplib.SMTP(SMTPServer, int(portNumber))
 server.set_debuglevel(1)
 server.ehlo()
 server.starttls()
-server.login(emailAddress, password)
-server.sendmail(emailAddress, recipients, msg.as_string())
+server.login(serverLogin, serverPassword)
+server.sendmail(fromAddress, recipients, msg.as_string())
 
 print('Email Sent...')
 
