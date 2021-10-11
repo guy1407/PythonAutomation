@@ -32,9 +32,7 @@ for token in doc:
 print ('---------------')
 """
 
-"""
 print ('---------------\nEntities: ')
 for entity in doc.ents:
     print(entity.text, entity.label_)
 print ('---------------')
-"""
