@@ -74,7 +74,7 @@ skills = []
 for sPDFFilename in os.listdir('resumes/'):
     if sPDFFilename.endswith('.pdf'):
         sInputFilename = os.path.join('resumes/', sPDFFilename)
-        print('Reading...' + sInputFilename)
+        print('\n------------\nReading...' + sInputFilename)
         sFileContent = smfPDF2Text(sInputFilename)
         # backup in txt folder:
         sTXTFilename = os.path.basename(
@@ -86,6 +86,7 @@ for sPDFFilename in os.listdir('resumes/'):
         objFile.close
 
         print("Text file created : " + sTXTFilename)
+        print("----------------------")
 
         if (sFileContent != ""):
             parse_content(sFileContent)
@@ -97,6 +98,7 @@ result_dict['skills'] = skills
 
 result_df = pd.DataFrame(result_dict)
 
-result_df.to_excel("summary.xlsx")
+result_df.to_csv("output/csv/summary.csv")
+result_df.to_excel("output/csv/summary.xlsx")
 
 print("Summary created !")
